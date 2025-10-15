@@ -3,4 +3,15 @@ API de Vendas desenvolvida em .NET 9 para avaliação técnica da Ambev Tech uti
 
 ## Pacotes (NuGet)
 Foi adicionado na raiz do projeto um arquivo NuGet.config afim de garantir que nenhum outro pacote de feed privado seja utilizado.
-Para efetuar a restauração, basta executar o seguinte comando: dotnet restore --configfile NuGet.config
+Para efetuar a restauração, basta executar o seguinte comando: 
+```
+dotnet restore --configfile NuGet.config
+```
+
+## Estrutura do Projeto
+- `123Vendas/Api` — Camada de apresentação
+- `123Vendas/Application` — Casos de uso, DTOs, validações
+- `123Vendas/Domain` — Entidades, regras de negócios
+- `123Vendas/Infra` — EF Core, repositórios, logs
+- `123Vendas/XUnitTest/Domain` — Testes unitários do domínio
+- `123Vendas/XUnitTest/Api` — Testes unitários da Api
