@@ -48,7 +48,7 @@ public sealed class Venda
 
         NumeroVenda = numeroVenda.Trim();
         DataEfetuacao = dataEfetuacao;
-        IdClienteExterno = IdClienteExterno;
+        IdClienteExterno = idClienteExterno;
         NomeCliente = nomeCliente.Trim();
         IdFilialExterna = idFilialExterna;
         NomeFilial = nomeFilial.Trim();
@@ -83,6 +83,21 @@ public sealed class Venda
         _itensDaVenda.Remove(itemDaVenda);
 
         _eventos.Add(new ItemCanceladoEvent(Id, idItem));
+    }
+
+    public void AtualizarDados(string nomeCliente, string nomeFilial)
+    {
+        if (Cancelada)
+            throw new InvalidOperationException("Não é permitido realizar alterações em uma venda cancelada.");
+
+        if (string.IsNullOrWhiteSpace(nomeCliente))
+            throw new ArgumentException("O nome do cliente é obrigatório.", nameof(nomeCliente));
+
+        if (string.IsNullOrWhiteSpace(nomeFilial))
+            throw new ArgumentException("O nome da filial é obrigatório.", nameof(nomeFilial));
+
+        NomeCliente = nomeCliente.Trim();
+        NomeFilial = nomeFilial.Trim();
     }
 
     public void Cancelar()

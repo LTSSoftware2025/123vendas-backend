@@ -20,51 +20,51 @@ public class RepositoryVenda : IRepositoryVenda
 
     public async Task<Venda?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var dm = await _context.Vendas
-            .Include(v => v.ItensDaVenda)
-            .FirstOrDefaultAsync(v => v.Id == id, cancellationToken);
+        var vendaDataModel = await _context.Vendas
+            .Include(vendaDataModel => vendaDataModel.ItensDaVenda)
+            .FirstOrDefaultAsync(vendaDataModel => vendaDataModel.Id == id, cancellationToken);
 
-        return dm is null ? null : _mapper.Map<Venda>(dm);
+        return vendaDataModel is null ? null : _mapper.Map<Venda>(vendaDataModel);
     }
 
     public async Task<Venda?> ObterPorNumeroVendaAsync(string numeroVenda, CancellationToken cancellationToken = default)
     {
-        var dm = await _context.Vendas
-            .Include(v => v.ItensDaVenda)
-            .FirstOrDefaultAsync(v => v.NumeroVenda == numeroVenda, cancellationToken);
+        var vendaDataModel = await _context.Vendas
+            .Include(vendaDataModel => vendaDataModel.ItensDaVenda)
+            .FirstOrDefaultAsync(vendaDataModel => vendaDataModel.NumeroVenda == numeroVenda, cancellationToken);
 
-        return dm is null ? null : _mapper.Map<Venda>(dm);
+        return vendaDataModel is null ? null : _mapper.Map<Venda>(vendaDataModel);
     }
 
     public async Task<IReadOnlyList<Venda>> ListarAsync(int pagina = 1, int tamanho = 20, CancellationToken cancellationToken = default)
     {
         var skip = (pagina - 1) * tamanho;
-        var dms = await _context.Vendas
-            .Include(v => v.ItensDaVenda)
-            .OrderByDescending(v => v.DataEfetuacao)
+        var lstVendaDataModel = await _context.Vendas
+            .Include(vendaDataModel => vendaDataModel.ItensDaVenda)
+            .OrderByDescending(vendaDataModel => vendaDataModel.DataEfetuacao)
             .Skip(skip).Take(tamanho)
             .ToListAsync(cancellationToken);
 
-        return _mapper.Map<List<Venda>>(dms);
+        return _mapper.Map<List<Venda>>(lstVendaDataModel);
     }
 
     public async Task AdicionarAsync(Venda venda, CancellationToken cancellationToken = default)
     {
-        var dm = _mapper.Map<VendaDataModel>(venda);
+        var vendaDataModel = _mapper.Map<VendaDataModel>(venda);
 
-        dm.Id = venda.Id;
-        foreach (var it in dm.ItensDaVenda)
-            if (it.Id == Guid.Empty) it.Id = Guid.NewGuid();
+        vendaDataModel.Id = venda.Id;
+        foreach (var itemVendaDataModel in vendaDataModel.ItensDaVenda)
+            if (itemVendaDataModel.Id == Guid.Empty) itemVendaDataModel.Id = Guid.NewGuid();
 
-        _context.Vendas.Add(dm);
+        _context.Vendas.Add(vendaDataModel);
         await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task AtualizarAsync(Venda venda, CancellationToken cancellationToken = default)
     {
         var existe = await _context.Vendas
-            .Include(v => v.ItensDaVenda)
-            .FirstOrDefaultAsync(v => v.Id == venda.Id, cancellationToken);
+            .Include(vendaDataModel => vendaDataModel.ItensDaVenda)
+            .FirstOrDefaultAsync(vendaDataModel => vendaDataModel.Id == venda.Id, cancellationToken);
 
         if (existe is null)
         {
@@ -72,19 +72,37 @@ public class RepositoryVenda : IRepositoryVenda
             return;
         }
 
-        _mapper.Map(venda, existe);
+        existe.NomeCliente = venda.NomeCliente;
+        existe.NomeFilial = venda.NomeFilial;
+        existe.Cancelada = venda.Cancelada;
 
-        _context.ItensDaVenda.RemoveRange(existe.ItensDaVenda);
-        existe.ItensDaVenda = _mapper.Map<List<ItemVendaDataModel>>(venda.ItensDaVenda);
+        var itensAntigos = _context.ItensDaVenda.Where(itemVendaDataModel => itemVendaDataModel.IdVenda == existe.Id);
+        _context.ItensDaVenda.RemoveRange(itensAntigos);
+
+        foreach (var item in venda.ItensDaVenda)
+        {
+            var novoItem = new ItemVendaDataModel
+            {
+                Id = item.Id == Guid.Empty ? Guid.NewGuid() : item.Id,
+                IdVenda = existe.Id,
+                IdProdutoExterno = item.IdProdutoExterno,
+                ProdutoDescricao = item.ProdutoDescricao,
+                Quantidade = item.Quantidade,
+                ValorUnitarioProduto = item.ValorUnitarioProduto,
+                DescontoPercentual = item.DescontoPercentual
+            };
+
+            _context.ItensDaVenda.Add(novoItem);
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task RemoverAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var dm = new VendaDataModel { Id = id };
-        _context.Attach(dm);
-        _context.Remove(dm);
+        var vendaDataModel = new VendaDataModel { Id = id };
+        _context.Attach(vendaDataModel);
+        _context.Remove(vendaDataModel);
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
