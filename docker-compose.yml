@@ -1,0 +1,48 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver_123vendas
+    environment:
+      SA_PASSWORD: "123Vendas@2025"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+    networks:
+      - 123vendas-network
+
+  api:
+    build:
+      context: .
+    container_name: api_123vendas
+    ports:
+      - "5103:5103"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__SqlServer=Server=sqlserver,1433;Database=VendasDb;User Id=sa;Password=123Vendas@2025;TrustServerCertificate=True;
+    depends_on:
+      - sqlserver
+    networks:
+      - 123vendas-network
+
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tests_123vendas
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__SqlServer=Server=sqlserver,1433;Database=VendasDb;User Id=sa;Password=123Vendas@2025;TrustServerCertificate=True;
+    depends_on:
+      - sqlserver
+      - api
+    networks:
+      - 123vendas-network
+    command: ["dotnet", "test", "--logger:trx;LogFileName=test-results.trx"]
+volumes:
+  sql_data:
+
+networks:
+  123vendas-network:
+    driver: bridge
