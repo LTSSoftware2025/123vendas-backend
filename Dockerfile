@@ -18,9 +18,13 @@ WORKDIR /app
 
 COPY --from=build /app/publish .
 
+COPY wait-for-it.sh /wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
+
 EXPOSE 5103
 
 ENV ASPNETCORE_URLS=http://+:5103
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-ENTRYPOINT ["dotnet", "123Vendas.Api.dll"]
+ENTRYPOINT ["bash", "/wait-for-it.sh", "sqlserver", "dotnet 123Vendas.Api.dll"]
+
