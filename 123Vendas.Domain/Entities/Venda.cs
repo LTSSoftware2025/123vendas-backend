@@ -59,8 +59,7 @@ public sealed class Venda
 
     public ItemVenda AdicionarItem(Guid idProduto, string produtoDescricao, int quantidade, decimal valorUnitarioProduto)
     {
-        if (Cancelada)
-            throw new InvalidOperationException("Não é permitido realizar alterações em uma venda cancelada.");
+        GarantirVendaNaoCancelada();
 
         var itemDaVenda = ItemVenda.Criar(idProduto, produtoDescricao, quantidade, valorUnitarioProduto);
         _itensDaVenda.Add(itemDaVenda);
@@ -72,8 +71,7 @@ public sealed class Venda
 
     public void RemoverItemDaVenda(Guid idItem)
     {
-        if (Cancelada)
-            throw new InvalidOperationException("Não é permitido realizar alterações em uma venda cancelada.");
+        GarantirVendaNaoCancelada();
 
         var itemDaVenda = _itensDaVenda.FirstOrDefault(i => i.Id == idItem);
 
@@ -87,8 +85,7 @@ public sealed class Venda
 
     public void AtualizarDados(string nomeCliente, string nomeFilial)
     {
-        if (Cancelada)
-            throw new InvalidOperationException("Não é permitido realizar alterações em uma venda cancelada.");
+        GarantirVendaNaoCancelada();
 
         if (string.IsNullOrWhiteSpace(nomeCliente))
             throw new ArgumentException("O nome do cliente é obrigatório.", nameof(nomeCliente));
@@ -108,5 +105,11 @@ public sealed class Venda
         Cancelada = true;
 
         _eventos.Add(new CompraCanceladaEvent(Id, NumeroVenda));
+    }
+
+    private void GarantirVendaNaoCancelada()
+    {
+        if (Cancelada)
+            throw new InvalidOperationException("Não é permitido realizar alterações em uma venda cancelada.");
     }
 }
