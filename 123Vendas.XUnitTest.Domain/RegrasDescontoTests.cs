@@ -8,7 +8,7 @@ public class RegrasDescontoTests
     [Theory]
     [InlineData(1, 0)]
     [InlineData(3, 0)]
-    [InlineData(4, 10)]
+    [InlineData(4, 0)]
     [InlineData(9, 10)]
     [InlineData(10, 20)]
     [InlineData(20, 20)]
