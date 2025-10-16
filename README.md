@@ -59,4 +59,27 @@ Passo 3: Verificar o endpoint de status da aplicação
 http://localhost:5103/health
 ```
 
-Passo 4: Confira no SQL Server que as tabelas venda e itemvenda foram criadas corretamente
+Passo 4: Confira no SQL Server que as tabelas venda e item-venda foram criadas corretamente
+
+## API de Vendas (CRUD)
+A camada de apresentação foi implementada com a finalidade de expor os endpoints REST responsáveis pelas operações de CRUD de vendas e manipulação dos itens de venda.
+
+### Endpoints Disponíveis
+- `POST /vendas` — Endpoint que permite a criação de uma nova venda.
+- `GET /vendas` — Endpoint que permite a listagem de todas as vendas, permitindo o usuário selecionar a quantidade de itens por página.
+- `GET /vendas/{id}` — Endpoint que permite a listagem de uma determinada venda através de seu identificador.
+- `GET /vendas/por-numero/{numero}` — Endpoint que permite a listagem de uma determinado venda através do número da venda.
+
+- `PUT /vendas` — Endpoint que permite a atualização da venda referentes aos dados que não são imutáveis (Nome do Cliente e Nome da Filial).
+- `POST /vendas/{id}/itens` — Endpoint que permite a adição de um novo item a uma venda já existente.
+- `DELETE /vendas/{id}/itens/{itemId}` — Endpoint que permite a deleção de um determinado item de uma venda já existente.
+- `POST /vendas/{id}/cancelar` — Endpoint que permite o cancelamento de uma determinada venda.
+
+### Observações Importantes
+- `Não é permitido realizar nenhuma alteração em uma venda que esteja com o Status: Cancelada`
+- `Todas as operações referente ao domínio estão sendo rastreadas via eventos de domínio`
+
+O acesso ao SWAGGER está habilitado e poderá ser acessado no caminho abaixo:
+```
+http://localhost:5103/swagger
+```
