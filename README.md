@@ -41,26 +41,6 @@ A camada de infraestrutura foi implementada utilizando Entity Framework Core com
 Foi implementado com Serilog, gravando logs no console (JSON format).
 As configurações do logging está em appsettings.json
 
-### Como testar?
-Para executar o projeto, siga o passo a passo abaixo:
-
-Passo 1: Executar o comando para criar o banco de dados
-```
-dotnet ef database update
-```
-
-Passo 2: Iniciar a API
-```
-dotnet run --project 123Vendas.Api
-```
-
-Passo 3: Verificar o endpoint de status da aplicação
-```
-http://localhost:5103/health
-```
-
-Passo 4: Confira no SQL Server que as tabelas venda e item-venda foram criadas corretamente
-
 ## API de Vendas (CRUD)
 A camada de apresentação foi implementada com a finalidade de expor os endpoints REST responsáveis pelas operações de CRUD de vendas e manipulação dos itens de venda.
 
@@ -82,4 +62,43 @@ A camada de apresentação foi implementada com a finalidade de expor os endpoin
 O acesso ao SWAGGER está habilitado e poderá ser acessado no caminho abaixo:
 ```
 http://localhost:5103/swagger
+```
+## Guia Rápido - Execução do projeto com Docker
+Esse guia serve para direcionar o passo a passo a ser realizado para as configurações e execução do projeto.
+
+PASSO 1 - Clonar o repositório
+```
+git clone <URL_DO_REPO>
+cd <NOME_DO_REPO
+```
+
+PASSO 2 - Restauração dos pacotes NuGet excluindo pacote de feed privado
+```
+dotnet restore --configfile NuGet.config
+```
+
+PASSO 3 - Buildar o projeto
+```
+dotnet build
+```
+
+PASSO 4 - Rodar os testes unitários
+```
+dotnet test
+```
+
+PASSO 5 - Garantir que exista permissão para a execução do arquivo "wait-for-it.sh" e converção do arquivo para remover \r
+```
+chmod +x wait-for-it.sh
+dos2unix wait-for-it.sh
+```
+
+PASSO 6 - Subindo a API + SQL em background
+```
+docker-compose up --build
+```
+
+PASSO 7 - Swagger (Endpoints)
+```
+localhost:5103/swagger/
 ```
