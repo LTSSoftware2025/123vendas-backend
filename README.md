@@ -27,3 +27,36 @@ Os testes de domínio foram ampliados afim de atender 100% da cobertura lógica 
 - `VendaEventosTests` — Garante que eventos adequados sejam publicados em cada uma das operações relevantes
 - `ItemVendaTests` — Valida questões sobre quantidade, valor unitário e cálculo de descontos de acordo com as regras de negócio
 - `RegrasDescontoTests` — Garante que as regras referente aos percentuais de desconto estejam sendo respeitadas de acordo com cada quantidade especificada no negócio
+
+## Infra (Entity Framework)
+A camada de infraestrutura foi implementada utilizando Entity Framework Core com SQL Server LocalDB.
+
+### Configuração
+- `Banco de Dados` — VendasDb
+- `Provider` — EntityFrameworkCore.SqlServer
+- `Contexto` — ApplicationDbContext
+- `Migrações` — As migrações estão localizadas em: 123Vendas.Infra/Migrations
+
+### Logging
+Foi implementado com Serilog, gravando logs no console (JSON format).
+As configurações do logging está em appsettings.json
+
+### Como testar?
+Para executar o projeto, siga o passo a passo abaixo:
+
+Passo 1: Executar o comando para criar o banco de dados
+```
+dotnet ef database update
+```
+
+Passo 2: Iniciar a API
+```
+dotnet run --project 123Vendas.Api
+```
+
+Passo 3: Verificar o endpoint de status da aplicação
+```
+http://localhost:5103/health
+```
+
+Passo 4: Confira no SQL Server que as tabelas venda e itemvenda foram criadas corretamente
