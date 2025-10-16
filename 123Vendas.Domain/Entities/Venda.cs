@@ -8,6 +8,7 @@ public sealed class Venda
     public string NumeroVenda { get; private set; } = default!;
     public DateTime DataEfetuacao { get; private set; }
     public bool Cancelada { get; private set; }
+    public StatusVenda Status => Cancelada ? StatusVenda.Cancelada : StatusVenda.NaoCancelado;
     public Guid IdClienteExterno { get; private set; }
     public string NomeCliente { get; private set; } = default!;
     public Guid IdFilialExterna { get; private set; }
